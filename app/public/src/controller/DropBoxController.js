@@ -55,6 +55,22 @@ class DropBoxController{
 
             let name = prompt("Renomear arquivo: ", file.name);
 
+            // PARA IMPEDIR QUE TENHA ARQUIVOS COM O MESMO NOME -  EU
+                let lista = this.listFilesEl.querySelectorAll('li') // eu
+                let nameLi  // eu
+
+                let tam  = lista.length
+                while(tam != 0){
+                    nameLi = JSON.parse(lista[tam-1].dataset.file)
+                    while(nameLi.name == name){
+                        name = prompt("Já existi um arquivo com esse nome: ", file.name);
+                        tam  = lista.length
+                    }
+                    tam = tam -1
+                    console.log(tam)
+                }
+            //ACABA A LÓGICA QUE IMPEDE QUE TENHA ARQUIVOS COM O MESMO NOME
+
             if(name){
 
                 file.name = name;
