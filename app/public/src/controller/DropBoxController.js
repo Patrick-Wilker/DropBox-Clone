@@ -2,14 +2,21 @@ class DropBoxController{
 
 
     constructor(){
+
+        this.onselectionchange = new Event('selectionchange');
+
         this.btnSendFileEl = document.querySelector('#btn-send-file');
         this.inputFileEl = document.querySelector('#files');
         this.snackModalEL = document.querySelector('#react-snackbar-root');
         this.progressBarEl = this.snackModalEL.querySelector('.mc-progress-bar-fg');
         this.namefileEl = this.snackModalEL.querySelector('.filename');
         this.timeleftEl = this.snackModalEL.querySelector('.timeleft');
-        this.listFileEl = document.querySelector('#list-of-files-and-directories');
+        this.listFilesEl = document.querySelector('#list-of-files-and-directories');
 
+        this.btnNewFolder = document.querySelector('#btn-send-file');
+        this.btnRename = document.querySelector('#btn-rename');
+        this.btnDelete = document.querySelector('#btn-delete');
+        
         this.connectFirebase();
         this.initEvents();
         this.readFiles();
@@ -34,7 +41,48 @@ class DropBoxController{
         
     }
 
+    getSelection(){
+        return this.listFilesEl.querySelectorAll('.selected');
+    }
+
     initEvents(){
+
+        this.btnRename.addEventListener('click', e=>{
+
+            let li = this.getSelection()[0];
+
+            let file = JSON.parse(li.dataset.file);
+
+            let name = prompt("Renomear arquivo: ", file.name);
+
+            if(name){
+
+                file.name = name;
+
+                this.getFirebaseRef().child(li.dataset.key).set(file);
+            }
+        })
+
+        this.listFilesEl.addEventListener('selectionchange', e=>{
+            
+            switch(this.getSelection().length){
+
+                case 0:
+                    this.btnDelete.style.display = 'none';
+                    this.btnRename.style.display = 'none';
+                    break;
+                case 1:
+                    this.btnDelete.style.display = 'block';
+                    this.btnRename.style.display = 'block';
+                    break;
+                default:
+                    this.btnDelete.style.display = 'block';
+                    this.btnRename.style.display = 'none';
+            }
+
+
+        })
+
         this.btnSendFileEl.addEventListener('click', event => {
 
             this.inputFileEl.click();
@@ -334,6 +382,7 @@ class DropBoxController{
         let li = document.createElement('li');
 
         li.dataset.key = key;
+        li.dataset.file = JSON.stringify(file);
 
         li.innerHTML = `
             ${this.getFileIconView(file)}
@@ -349,13 +398,13 @@ class DropBoxController{
     readFiles(){
         this.getFirebaseRef().on('value', snapshot => {
 
-            this.listFileEl.innerHTML = '';
+            this.listFilesEl.innerHTML = '';
 
             snapshot.forEach(snapshotItem =>{
                 let key = snapshotItem.key;
                 let data = snapshotItem.val();
 
-                this.listFileEl.appendChild(this.getFileView(data, key));
+                this.listFilesEl.appendChild(this.getFileView(data, key));
             })
         })
     }
@@ -366,7 +415,7 @@ class DropBoxController{
 
             if(e.shiftKey){
                 
-                let firstLi = this.listFileEl.querySelector('.selected');
+                let firstLi = this.listFilesEl.querySelector('.selected');
 
                 if(firstLi){
 
@@ -387,17 +436,21 @@ class DropBoxController{
                         }
                     });
 
+                    this.listFilesEl.dispatchEvent(this.onselectionchange);
+
                     return true;
                 }
             }
 
             if(!e.ctrlKey){
-                this.listFileEl.querySelectorAll('li.selected').forEach(el => {
+                this.listFilesEl.querySelectorAll('li.selected').forEach(el => {
                     el.classList.remove('selected');
                 })
             }
 
             li.classList.toggle('selected');
+
+            this.listFilesEl.dispatchEvent(this.onselectionchange);
             
         })
 
