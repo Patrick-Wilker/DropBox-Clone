@@ -9,7 +9,8 @@
 
 <h2> <img src="https://user-images.githubusercontent.com/38691922/77790815-3d7e5d00-7044-11ea-8ffe-e8d448946d4a.png" height="30" width="30">Projeto</h2>
 
-O DropBox Clone visa reproduzir as principais funcionalidades do DropBox com o intuito de aprofundar os estudos em node.js.
+O DropBox Clone visa reproduzir as principais funcionalidades do DropBox com o intuito de aprofundar os estudos em node.js. Para iniciar a aplicação de um 
+<strong> npm start </strong> na raiz da pasta app.
 
 <h2><img src="https://user-images.githubusercontent.com/38691922/77791613-bcc06080-7045-11ea-864b-78684851af42.png" 
          height="30" width="30"> Como contribuir</h2>
